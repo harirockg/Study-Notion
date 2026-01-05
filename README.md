@@ -3,7 +3,7 @@
 LIVE LINK :- https://study-notion-nu-brown.vercel.app/
 
 
-![Main Page](images/webpage.png)
+![Main Page](images/webpagehome.png)
 StudyNotion is a fully functional EdTech platform that enables users to create, consume, and rate educational content. The platform is built using the MERN stack, which includes ReactJS, NodeJS, MongoDB, and ExpressJS.
 
 ## Table of Contents
