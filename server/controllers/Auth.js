@@ -116,15 +116,15 @@ exports.signup = async (req, res) => {
     });
 
     const user = await User.create({
-      firstName,
-      lastName,
-      email,
-      password: hashedPassword,
-      accountType,
-      contactNumber,
-      additionalDetails: profile._id,
-      image: `https://api.dicebear.com/5.x/initials/svg?seed=${firstName} ${lastName}`,
-    });
+  firstName,
+  lastName,
+  email,
+  password: hashedPassword,
+  accountType,
+  contactNumber,
+  additionalDetails: profile._id,
+  image: `https://api.dicebear.com/5.x/initials/svg?seed=${firstName}${lastName}`,
+});
 
     return res.status(201).json({
       success: true,
