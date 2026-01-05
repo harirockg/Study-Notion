@@ -14,22 +14,23 @@ const { cloudinaryConnect } = require("./config/cloudinary");
 const fileUpload = require("express-fileupload");
 const dotenv = require("dotenv");
 
-// 🔹 env config (ONLY ONCE)
+// 🔹 Load env only once
 dotenv.config();
 
-// 🔹 PORT (ONLY ONCE)
+// 🔹 PORT
 const PORT = process.env.PORT || 4000;
 
-// 🔹 database connect
+// 🔹 DB
 database.connect();
 
-// 🔹 middlewares
+// 🔹 Middlewares
 app.use(express.json());
 app.use(cookieParser());
 
+// ✅ FIXED CORS (Vercel + localhost + previews all allowed)
 app.use(
   cors({
-    origin: process.env.FRONTEND_URL, // Vercel URL
+    origin: true,
     credentials: true,
   })
 );
@@ -41,17 +42,17 @@ app.use(
   })
 );
 
-// 🔹 cloudinary
+// 🔹 Cloudinary
 cloudinaryConnect();
 
-// 🔹 routes
+// 🔹 Routes
 app.use("/api/v1/auth", userRoutes);
 app.use("/api/v1/profile", profileRoutes);
 app.use("/api/v1/course", courseRoutes);
 app.use("/api/v1/payment", paymentRoutes);
 app.use("/api/v1/reach", contactUsRoute);
 
-// 🔹 test route
+// 🔹 Test route
 app.get("/", (req, res) => {
   return res.json({
     success: true,
@@ -59,7 +60,7 @@ app.get("/", (req, res) => {
   });
 });
 
-// 🔹 listen
+// 🔹 Start server
 app.listen(PORT, () => {
   console.log(`App is running at ${PORT}`);
 });

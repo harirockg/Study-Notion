@@ -3,25 +3,19 @@ const User = require("../models/User");
 const OTP = require("../models/OTP");
 const jwt = require("jsonwebtoken");
 const otpGenerator = require("otp-generator");
+const mailSender = require("../utils/mailSender");
 const Profile = require("../models/Profile");
 require("dotenv").config();
 
-/* =========================
-   SEND OTP
-========================= */
+// ================= SEND OTP =================
 exports.sendotp = async (req, res) => {
   try {
-    const { email } = req.body;
-
-    if (!email) {
-      return res.status(400).json({
-        success: false,
-        message: "Email is required",
-      });
-    }
+    const { email, checkUserPresent } = req.body;
 
     const userExists = await User.findOne({ email });
-    if (userExists) {
+
+    // ✅ FIX: signup vs login handling
+    if (checkUserPresent && userExists) {
       return res.status(400).json({
         success: false,
         message: "User already registered",
@@ -34,15 +28,20 @@ exports.sendotp = async (req, res) => {
       specialChars: false,
     });
 
-    // OTP model ka pre-save hook email bhej dega
     await OTP.create({ email, otp });
+
+    await mailSender(
+      email,
+      "Your OTP for StudyNotion",
+      `<h2>Your OTP is ${otp}</h2><p>Valid for 5 minutes</p>`
+    );
 
     return res.status(200).json({
       success: true,
       message: "OTP sent successfully",
     });
   } catch (error) {
-    console.error("SEND OTP ERROR:", error);
+    console.error("SEND OTP ERROR:", error.message);
     return res.status(500).json({
       success: false,
       message: "OTP sending failed",
@@ -50,9 +49,7 @@ exports.sendotp = async (req, res) => {
   }
 };
 
-/* =========================
-   SIGNUP
-========================= */
+// ================= SIGNUP =================
 exports.signup = async (req, res) => {
   try {
     const {
@@ -87,14 +84,6 @@ exports.signup = async (req, res) => {
       });
     }
 
-    const existingUser = await User.findOne({ email });
-    if (existingUser) {
-      return res.status(400).json({
-        success: false,
-        message: "User already registered",
-      });
-    }
-
     const recentOtp = await OTP.findOne({ email })
       .sort({ createdAt: -1 })
       .limit(1);
@@ -102,7 +91,7 @@ exports.signup = async (req, res) => {
     if (!recentOtp || recentOtp.otp !== otp) {
       return res.status(400).json({
         success: false,
-        message: "Invalid or expired OTP",
+        message: "Invalid OTP",
       });
     }
 
@@ -112,19 +101,19 @@ exports.signup = async (req, res) => {
       gender: null,
       dateOfBirth: null,
       about: null,
-      contactNumber: contactNumber || null,
+      contactNumber: null,
     });
 
     const user = await User.create({
-  firstName,
-  lastName,
-  email,
-  password: hashedPassword,
-  accountType,
-  contactNumber,
-  additionalDetails: profile._id,
-  image: `https://api.dicebear.com/5.x/initials/svg?seed=${firstName}${lastName}`,
-});
+      firstName,
+      lastName,
+      email,
+      password: hashedPassword,
+      accountType,
+      contactNumber,
+      additionalDetails: profile._id,
+      image: `https://api.dicebear.com/5.x/initials/svg?seed=${firstName}${lastName}`,
+    });
 
     return res.status(201).json({
       success: true,
@@ -132,7 +121,7 @@ exports.signup = async (req, res) => {
       user,
     });
   } catch (error) {
-    console.error("SIGNUP ERROR:", error);
+    console.error("SIGNUP ERROR:", error.message);
     return res.status(500).json({
       success: false,
       message: "Signup failed",
@@ -140,19 +129,10 @@ exports.signup = async (req, res) => {
   }
 };
 
-/* =========================
-   LOGIN
-========================= */
+// ================= LOGIN =================
 exports.login = async (req, res) => {
   try {
     const { email, password } = req.body;
-
-    if (!email || !password) {
-      return res.status(400).json({
-        success: false,
-        message: "Email and password required",
-      });
-    }
 
     const user = await User.findOne({ email }).populate("additionalDetails");
     if (!user) {
@@ -180,6 +160,8 @@ exports.login = async (req, res) => {
 
     res.cookie("token", token, {
       httpOnly: true,
+      sameSite: "none",
+      secure: true,
       expires: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000),
     });
 
@@ -190,7 +172,7 @@ exports.login = async (req, res) => {
       message: "Login successful",
     });
   } catch (error) {
-    console.error("LOGIN ERROR:", error);
+    console.error("LOGIN ERROR:", error.message);
     return res.status(500).json({
       success: false,
       message: "Login failed",
