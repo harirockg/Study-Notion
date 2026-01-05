@@ -1,2 +1,10 @@
-.env 
+# Node
+node_modules/
+
+# Env files
+.env
 server/.env
+
+# OS
+.DS_Store
+Thumbs.db
