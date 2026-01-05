@@ -4,18 +4,16 @@ const mailSender = async (email, title, body) => {
   try {
     const transporter = nodemailer.createTransport({
       host: "smtp-relay.brevo.com",
-      port: 587,
-      secure: false, // TLS ke liye false hi rahega
+      port: 465, // Port badal diya (SSL port)
+      secure: true, // 465 ke liye true hona zaroori hai
       auth: {
         user: process.env.MAIL_USER,
         pass: process.env.MAIL_PASS,
       },
-      // Ye settings timeout issue solve karne ke liye hain
-      tls: {
-        rejectUnauthorized: false, // Security handshake ko asan banata hai
-      },
-      connectionTimeout: 20000, // Timeout badha kar 20 seconds kar diya
-      greetingTimeout: 15000,
+      // Timeout aur badha diya
+      connectionTimeout: 30000, 
+      greetingTimeout: 30000,
+      socketTimeout: 30000,
     });
 
     const info = await transporter.sendMail({
