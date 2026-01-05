@@ -3,9 +3,9 @@ const nodemailer = require("nodemailer");
 const mailSender = async (email, title, body) => {
   try {
     const transporter = nodemailer.createTransport({
-      host: "smtp.gmail.com",
-      port: 587,
-      secure: false,
+      host: process.env.MAIL_HOST,
+      port: process.env.MAIL_PORT,
+      secure: false, // Brevo = false
       auth: {
         user: process.env.MAIL_USER,
         pass: process.env.MAIL_PASS,
@@ -13,7 +13,7 @@ const mailSender = async (email, title, body) => {
     });
 
     const info = await transporter.sendMail({
-      from: `"StudyNotion" <${process.env.MAIL_USER}>`,
+      from: `"StudyNotion" <no-reply@studynotion.com>`,
       to: email,
       subject: title,
       html: body,
@@ -22,7 +22,7 @@ const mailSender = async (email, title, body) => {
     console.log("EMAIL SENT:", info.messageId);
     return info;
   } catch (error) {
-    console.error("MAIL ERROR:", error.message);
+    console.error("MAIL ERROR:", error);
     throw error;
   }
 };
