@@ -3,12 +3,12 @@ const nodemailer = require("nodemailer");
 const mailSender = async (email, title, body) => {
   try {
     const transporter = nodemailer.createTransport({
-      host: process.env.MAIL_HOST,
-      port: 587,
-      secure: false,
+      host: process.env.MAIL_HOST,        // smtp.gmail.com
+      port: 587,                          // 🔥 REQUIRED
+      secure: false,                      // 🔥 REQUIRED (true only for 465)
       auth: {
-        user: process.env.MAIL_USER,
-        pass: process.env.MAIL_PASS,
+        user: process.env.MAIL_USER,      // your gmail
+        pass: process.env.MAIL_PASS,      // app password
       },
     });
 
@@ -22,8 +22,8 @@ const mailSender = async (email, title, body) => {
     console.log("Email sent:", info.messageId);
     return info;
   } catch (error) {
-    console.error("MailSender Error:", error.message);
-    throw error;
+    console.error("Mail Sender Error:", error.message);
+    throw error; // 🔥 IMPORTANT
   }
 };
 
