@@ -1,6 +1,6 @@
 
 # StudyNotion - EdTech Platform
-:rocket: [Link to website][]
+LIVE LINK :- https://study-notion-nu-brown.vercel.app/
 
 
 ![Main Page](images/webpage.png)
