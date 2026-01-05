@@ -2,19 +2,20 @@ const nodemailer = require("nodemailer");
 
 const mailSender = async (email, title, body) => {
   try {
-    // Brevo settings ke liye configuration
     const transporter = nodemailer.createTransport({
-      host: process.env.MAIL_HOST, // smtp-relay.brevo.com
-      port: 587,                   // Brevo standard port
-      secure: false,               // 587 ke liye false hi rahega
+      host: "smtp-relay.brevo.com", // Direct name likhein
+      port: 587,
+      secure: false, // 587 port ke liye false
       auth: {
-        user: process.env.MAIL_USER,
+        user: process.env.MAIL_USER, // Yahan apni asli Gmail ID Render mein daalein
         pass: process.env.MAIL_PASS,
       },
+      // Ye line DNS issue solve karne ke liye zaroori hai
+      connectionTimeout: 10000, 
     });
 
     const info = await transporter.sendMail({
-      from: `"StudyNotion" <${process.env.MAIL_USER}>`, // Brevo par registered email hi use karein
+      from: `"StudyNotion" <${process.env.MAIL_USER}>`,
       to: `${email}`,
       subject: `${title}`,
       html: `${body}`,
