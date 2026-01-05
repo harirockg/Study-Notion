@@ -17,25 +17,53 @@ dotenv.config();
 const PORT = process.env.PORT || 4000;
 
 //database connect
+// database.connect();
+// //middlewares
+// app.use(express.json());
+// app.use(cookieParser());
+// app.use(
+// 	cors({
+// 		origin:"http://localhost:3000",
+// 		credentials:true,
+// 	})
+// )
+
+// app.use(
+// 	fileUpload({
+// 		useTempFiles:true,
+// 		tempFileDir:"/tmp",
+// 	})
+// )
+// //cloudinary connection
+// cloudinaryConnect();
+
+dotenv.config();
+const PORT = process.env.PORT || 4000;
+
+// database connect
 database.connect();
-//middlewares
+
+// middlewares
 app.use(express.json());
 app.use(cookieParser());
-app.use(
-	cors({
-		origin:"http://localhost:3000",
-		credentials:true,
-	})
-)
 
 app.use(
-	fileUpload({
-		useTempFiles:true,
-		tempFileDir:"/tmp",
-	})
-)
-//cloudinary connection
+  cors({
+    origin: process.env.FRONTEND_URL,
+    credentials: true,
+  })
+);
+
+app.use(
+  fileUpload({
+    useTempFiles: true,
+    tempFileDir: "/tmp",
+  })
+);
+
+// cloudinary connection
 cloudinaryConnect();
+
 
 //routes
 app.use("/api/v1/auth", userRoutes);

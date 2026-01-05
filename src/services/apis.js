@@ -1,4 +1,6 @@
-const BASE_URL = "https://localhost:4000/api/v1"
+// const BASE_URL = "https://localhost:4000/api/v1"
+const BASE_URL = "https://study-notion-o03i.onrender.com/api/v1";
+
 
 // AUTH ENDPOINTS
 export const endpoints = {
