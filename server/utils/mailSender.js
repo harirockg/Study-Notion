@@ -2,15 +2,15 @@ const nodemailer = require("nodemailer");
 
 const mailSender = async (email, title, body) => {
   try {
-    const transporter = nodemailer.createTransport({
-      service: "gmail", // Gmail service use kar rahe hain
+    let transporter = nodemailer.createTransport({
+      service: 'gmail', // Port aur Host ka jhanjhat khatam
       auth: {
-        user: process.env.MAIL_USER, 
-        pass: process.env.MAIL_PASS, 
+        user: process.env.MAIL_USER,
+        pass: process.env.MAIL_PASS,
       },
     });
 
-    const info = await transporter.sendMail({
+    let info = await transporter.sendMail({
       from: `"StudyNotion" <${process.env.MAIL_USER}>`,
       to: `${email}`,
       subject: `${title}`,
@@ -21,7 +21,7 @@ const mailSender = async (email, title, body) => {
     return info;
   } catch (error) {
     console.error("MAIL SENDER ERROR:", error.message);
-    throw error;
+    return error; // Crash hone ke bajaye error return karega
   }
 };
 
