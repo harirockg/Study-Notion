@@ -14,29 +14,36 @@ const OTPSchema = new mongoose.Schema({
   createdAt: {
     type: Date,
     default: Date.now,
-    expires: 60 * 5,
+    expires: 60 * 5, // OTP 5 minute mein expire ho jayega
   },
 });
 
+// Function to send email
 async function sendVerificationEmail(email, otp) {
   try {
-    await mailSender(
+    const mailResponse = await mailSender(
       email,
-      "Your OTP for StudyNotion",
+      "Verification Email from StudyNotion",
       emailTemplate(otp)
     );
-    console.log("OTP email sent successfully");
+    console.log("Email sent successfully: ", mailResponse.response);
   } catch (error) {
-    console.error("OTP Email Error:", error.message);
+    console.error("Error occurred while sending mails: ", error.message);
+    // Hum error throw karenge taaki OTP document database mein save na ho agar mail nahi gaya
     throw error;
   }
 }
 
+// Pre-save hook: Data save hone se pehle mail bhejo
 OTPSchema.pre("save", async function (next) {
+  console.log("New document saved to database");
+
+  // Only send an email when a new document is created
   if (this.isNew) {
     await sendVerificationEmail(this.email, this.otp);
   }
   next();
 });
 
-module.exports = mongoose.model("OTP", OTPSchema);
+const OTP = mongoose.model("OTP", OTPSchema);
+module.exports = OTP;
