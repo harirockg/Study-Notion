@@ -9,6 +9,8 @@ import { setSignupData } from "../../../slices/authSlice"
 import { ACCOUNT_TYPE } from "../../../utils/constants"
 import Tab from "../../common/Tab"
 
+
+
 function SignupForm() {
   const navigate = useNavigate()
   const dispatch = useDispatch()
