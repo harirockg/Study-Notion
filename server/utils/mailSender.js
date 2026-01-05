@@ -3,17 +3,13 @@ const nodemailer = require("nodemailer");
 const mailSender = async (email, title, body) => {
   try {
     const transporter = nodemailer.createTransport({
-      host: "smtp-relay.brevo.com",
-      port: 465, // Port badal diya (SSL port)
-      secure: true, // 465 ke liye true hona zaroori hai
+      host: "smtp.gmail.com", // Brevo se Gmail par shift
+      port: 587,
+      secure: false,
       auth: {
-        user: process.env.MAIL_USER,
-        pass: process.env.MAIL_PASS,
+        user: process.env.MAIL_USER, // Aapki Gmail ID
+        pass: process.env.MAIL_PASS, // 16-digit App Password
       },
-      // Timeout aur badha diya
-      connectionTimeout: 30000, 
-      greetingTimeout: 30000,
-      socketTimeout: 30000,
     });
 
     const info = await transporter.sendMail({
