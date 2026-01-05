@@ -3,17 +3,18 @@ const nodemailer = require("nodemailer");
 const mailSender = async (email, title, body) => {
   try {
     let transporter = nodemailer.createTransport({
-      service: 'gmail',
+      host: "smtp.gmail.com",
+      port: 465,
+      secure: true, // SSL ka use karein
       auth: {
         user: process.env.MAIL_USER,
         pass: process.env.MAIL_PASS,
       },
-      // Ye do lines connection fast karengi
-      connectionTimeout: 5000, 
-      greetingTimeout: 5000,
+      // Timeout ko thoda badha dete hain
+      connectionTimeout: 10000, 
     });
 
-    console.log("Attempting to send email to:", email); // Ye debug line hai
+    console.log("Attempting to send email to:", email);
 
     let info = await transporter.sendMail({
       from: `"StudyNotion" <${process.env.MAIL_USER}>`,
@@ -26,7 +27,8 @@ const mailSender = async (email, title, body) => {
     return info;
   } catch (error) {
     console.error("MAIL SENDER ERROR:", error.message);
-    return error;
+    // Yahan throw error zaroori hai taaki frontend ko pata chale fail hua hai
+    throw error; 
   }
 };
 
