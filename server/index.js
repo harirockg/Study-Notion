@@ -14,23 +14,26 @@ const { cloudinaryConnect } = require("./config/cloudinary");
 const fileUpload = require("express-fileupload");
 const dotenv = require("dotenv");
 
-// 🔹 Load env only once
+// Load environment variables
 dotenv.config();
 
-// 🔹 PORT
+// PORT
 const PORT = process.env.PORT || 4000;
 
-// 🔹 DB
+// Database Connection
 database.connect();
 
-// 🔹 Middlewares
+// Middlewares
 app.use(express.json());
 app.use(cookieParser());
 
-// ✅ FIXED CORS (Vercel + localhost + previews all allowed)
+// ✅ IMPROVED CORS (Specific Origins for Security)
 app.use(
   cors({
-    origin: true,
+    origin: [
+      "https://study-notion-nu-brown.vercel.app", // Aapka Vercel URL
+      "http://localhost:3000",                   // Local Testing
+    ],
     credentials: true,
   })
 );
@@ -42,17 +45,18 @@ app.use(
   })
 );
 
-// 🔹 Cloudinary
+// Cloudinary Connection
 cloudinaryConnect();
 
 // 🔹 Routes
+// Dhyan dein: Routes ke path wahi hone chahiye jo authAPI.js expect kar raha hai
 app.use("/api/v1/auth", userRoutes);
 app.use("/api/v1/profile", profileRoutes);
 app.use("/api/v1/course", courseRoutes);
 app.use("/api/v1/payment", paymentRoutes);
 app.use("/api/v1/reach", contactUsRoute);
 
-// 🔹 Test route
+// Default/Test route
 app.get("/", (req, res) => {
   return res.json({
     success: true,
@@ -60,7 +64,7 @@ app.get("/", (req, res) => {
   });
 });
 
-// 🔹 Start server
+// Start server
 app.listen(PORT, () => {
   console.log(`App is running at ${PORT}`);
 });
