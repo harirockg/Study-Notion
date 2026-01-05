@@ -1,34 +1,28 @@
-const nodemailer = require("nodemailer");
+const axios = require("axios");
 
 const mailSender = async (email, title, body) => {
   try {
-    let transporter = nodemailer.createTransport({
-      host: "smtp.gmail.com",
-      port: 465,
-      secure: true, // SSL ka use karein
-      auth: {
-        user: process.env.MAIL_USER,
-        pass: process.env.MAIL_PASS,
+    const response = await axios.post(
+      "https://api.brevo.com/v3/smtp/email",
+      {
+        sender: { name: "StudyNotion", email: process.env.MAIL_USER },
+        to: [{ email: email }],
+        subject: title,
+        htmlContent: body,
       },
-      // Timeout ko thoda badha dete hain
-      connectionTimeout: 10000, 
-    });
+      {
+        headers: {
+          "api-key": process.env.MAIL_PASS, // Aapki lambi Brevo API Key
+          "Content-Type": "application/json",
+        },
+      }
+    );
 
-    console.log("Attempting to send email to:", email);
-
-    let info = await transporter.sendMail({
-      from: `"StudyNotion" <${process.env.MAIL_USER}>`,
-      to: `${email}`,
-      subject: `${title}`,
-      html: `${body}`,
-    });
-
-    console.log("EMAIL SENT SUCCESSFULLY:", info.messageId);
-    return info;
+    console.log("EMAIL SENT SUCCESSFULLY via API:", response.data.messageId);
+    return response.data;
   } catch (error) {
-    console.error("MAIL SENDER ERROR:", error.message);
-    // Yahan throw error zaroori hai taaki frontend ko pata chale fail hua hai
-    throw error; 
+    console.error("MAIL SENDER ERROR (API):", error.response ? error.response.data : error.message);
+    throw error;
   }
 };
 
