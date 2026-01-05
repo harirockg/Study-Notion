@@ -3,15 +3,19 @@ const nodemailer = require("nodemailer");
 const mailSender = async (email, title, body) => {
   try {
     const transporter = nodemailer.createTransport({
-      host: "smtp-relay.brevo.com", // Direct name likhein
+      host: "smtp-relay.brevo.com",
       port: 587,
-      secure: false, // 587 port ke liye false
+      secure: false, // TLS ke liye false hi rahega
       auth: {
-        user: process.env.MAIL_USER, // Yahan apni asli Gmail ID Render mein daalein
+        user: process.env.MAIL_USER,
         pass: process.env.MAIL_PASS,
       },
-      // Ye line DNS issue solve karne ke liye zaroori hai
-      connectionTimeout: 10000, 
+      // Ye settings timeout issue solve karne ke liye hain
+      tls: {
+        rejectUnauthorized: false, // Security handshake ko asan banata hai
+      },
+      connectionTimeout: 20000, // Timeout badha kar 20 seconds kar diya
+      greetingTimeout: 15000,
     });
 
     const info = await transporter.sendMail({
